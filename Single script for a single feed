@@ -1,9 +1,9 @@
 
 function fetchRSSJobs() {
-  const url = 'https://rss.app/feeds/v1.1/PVhoP8nk6gvgKH97.json'; 
-  const sheet = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1ODRIEO1TbOYKVA0S5hFjUGhM_iG2tkA6wuUuT_qJJeI/edit#gid=0').getSheetByName('LinkedIn PM jobs'); 
+  const url = 'YOUR rss.app feeds URL ending in .json goes here'; 
+  const sheet = SpreadsheetApp.openByUrl('YOUR docs.google Sheet URL goes here').getSheetByName('Name of destination from YOUR Sheet goes here - case sensitive'); 
 
-  // Add headers only if the sheet is empty
+  // Add headers only if the sheet is empty /// IMPORATNT: Each Sheet tab in parentheses below must be an EXACT match of how it's written in Sheets
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(['Company', 'Job Title', 'Job Location', 'LinkedIn URL']);
   }
