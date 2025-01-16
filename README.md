@@ -29,3 +29,27 @@ Benefits of this approach
 - Dynamic management: Easily add or remove feeds in the feeds array
 - Centralized control: Single function handles all feeds and tabs
 - Scalability: Supports any number of feeds and tabs
+- Modularity: Parsing functions and extraction logic can be easily adjusted for new feeds and changes to existing feeds
+
+----------------------------------------------
+
+Single script for multiple feeds 
+
+Customized Parsers for LinkedIn and BuiltIn (Power to fly parsing issues persist)
+
+LinkedIn Parser
+- Includes regex patterns to extract company, job title and location data, and logic to ensure proper segementation of each item
+- Adheres to standardized LinkedIn job posting format: Job Title at Company in Location; and has fallback values when data is NULL
+
+BuiltIn Parser
+- Company Extraction
+   * Added a fallback to extract the company name from URLs containing /company/. Converts - into spaces for a clean company name.
+    (e.g., for URLs like https://www.builtinboston.com/company/liberty-mutual-insurance, the company should now extract as "Liberty Mutual Insurance")  
+- Job Title Extraction
+  * Added a fallback to extract job titles from URLs containing /jobs/product/search/.
+    (e.g., for URLs like https://www.builtinboston.com/jobs/product/search/head-of-product, the job title should extracts as "Head of Product")  
+- Location Extraction
+  * Relies on content or defaults to "No location provided".
+
+
+
