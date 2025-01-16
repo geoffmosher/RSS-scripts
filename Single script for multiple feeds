@@ -1,0 +1,63 @@
+
+function fetchAllRSSJobs() {
+  // Define RSS feeds and corresponding sheet names
+  const feeds = [
+    { url: 'https://rss.app/feeds/v1.1/LINKEDIN_FEED_URL.json', sheetName: 'LinkedIn PM Jobs' },
+    { url: 'https://rss.app/feeds/v1.1/INDEED_FEED_URL.json', sheetName: 'Indeed Data Analyst Jobs' },
+    { url: 'https://rss.app/feeds/v1.1/GLASSDOOR_FEED_URL.json', sheetName: 'Glassdoor Product Manager Jobs' }
+  ];
+
+  // Open the spreadsheet
+  const spreadsheet = SpreadsheetApp.openByUrl('YOUR_SHEET_URL');
+
+  // Process each feed
+  feeds.forEach(feed => {
+    const sheet = spreadsheet.getSheetByName(feed.sheetName);
+
+    // Add headers only if the sheet is empty
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(['Company', 'Job Title', 'Job Location', 'Job URL']);
+    }
+
+    // Fetch RSS data
+    const response = UrlFetchApp.fetch(feed.url);
+    const data = JSON.parse(response.getContentText());
+
+    // Fetch existing job URLs to avoid duplicates
+    let existingLinks = [];
+    if (sheet.getLastRow() > 1) {
+      existingLinks = sheet.getRange(2, 4, sheet.getLastRow() - 1).getValues().flat();
+    }
+
+    // Append new rows for jobs not already in the sheet
+    data.items.forEach((item) => {
+      const rawTitle = item.title || 'No title provided';
+      const company = extractCompany(rawTitle);
+      const jobTitle = extractJobTitle(rawTitle);
+      const location = extractLocation(rawTitle);
+      const url = item.url || 'No URL provided';
+
+      if (!existingLinks.includes(url)) {
+        sheet.appendRow([company, jobTitle, location, url]);
+      }
+    });
+  });
+}
+
+// Helper function to extract company name
+function extractCompany(rawTitle) {
+  const match = rawTitle.match(/^(.*?) hiring/i);
+  return match ? match[1].trim() : 'No company provided';
+}
+
+// Helper function to extract job title
+function extractJobTitle(rawTitle) {
+  const match = rawTitle.match(/hiring (.*?) in/i);
+  return match ? match[1].trim() : 'No job title provided';
+}
+
+// Helper function to extract location
+function extractLocation(rawTitle) {
+  const match = rawTitle.match(/in (.*?)(,|$)/i);
+  return match ? match[1].trim() : 'No location provided';
+}
