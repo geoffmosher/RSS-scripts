@@ -2,10 +2,15 @@
 function fetchAllRSSJobs() {
   // Define RSS feeds and corresponding sheet names
   const feeds = [
-    { url: 'https://rss.app/feeds/v1.1/LINKEDIN_FEED_URL.json', sheetName: 'LinkedIn PM Jobs' },
-    { url: 'https://rss.app/feeds/v1.1/INDEED_FEED_URL.json', sheetName: 'Indeed Data Analyst Jobs' },
-    { url: 'https://rss.app/feeds/v1.1/GLASSDOOR_FEED_URL.json', sheetName: 'Glassdoor Product Manager Jobs' }
+    { url: 'YOUR rss.app feeds URL ending in .json goes here', sheetName: 'Name of destination from YOUR Sheet goes here - case sensitive' },
+    { url: 'SAME AS ABOVE', sheetName: 'SAME AS ABOVE' },
+    { url: 'SAME AS ABOVE', sheetName: 'SAME AS ABOVE' }
   ];
+
+function fetchRSSJobs() {
+  const url = 'YOUR rss.app feeds URL ending in .json goes here'; 
+  const sheet = SpreadsheetApp.openByUrl('YOUR docs.google Sheet URL goes here').getSheetByName('Name of destination from YOUR Sheet goes here - case sensitive'); 
+
 
   // Open the spreadsheet
   const spreadsheet = SpreadsheetApp.openByUrl('YOUR_SHEET_URL');
@@ -14,7 +19,7 @@ function fetchAllRSSJobs() {
   feeds.forEach(feed => {
     const sheet = spreadsheet.getSheetByName(feed.sheetName);
 
-    // Add headers only if the sheet is empty
+    // Add headers only if the sheet is empty /// IMPORATNT: Each Sheet tab in parentheses below must be an EXACT match of how it's written in Sheets
     if (sheet.getLastRow() === 0) {
       sheet.appendRow(['Company', 'Job Title', 'Job Location', 'Job URL']);
     }
