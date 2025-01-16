@@ -1,0 +1,53 @@
+
+function fetchRSSJobs() {
+  const url = 'https://rss.app/feeds/v1.1/PVhoP8nk6gvgKH97.json'; 
+  const sheet = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1ODRIEO1TbOYKVA0S5hFjUGhM_iG2tkA6wuUuT_qJJeI/edit#gid=0').getSheetByName('LinkedIn PM jobs'); 
+
+  // Add headers only if the sheet is empty
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['Company', 'Job Title', 'Job Location', 'LinkedIn URL']);
+  }
+
+  const response = UrlFetchApp.fetch(url);
+  const data = JSON.parse(response.getContentText());
+
+  // Uncomment the following line for debugging the number of items in the feed
+  // Logger.log(`Number of items in feed: ${data.items.length}`);
+
+  // Fetch existing LinkedIn URLs if rows exist beyond the header
+  let existingLinks = [];
+  if (sheet.getLastRow() > 1) {
+    existingLinks = sheet.getRange(2, 4, sheet.getLastRow() - 1).getValues().flat();
+  }
+
+  // Append rows if the LinkedIn URL doesn't already exist
+  data.items.forEach((item) => {
+    const rawTitle = item.title || 'No title provided';
+    const company = extractCompany(rawTitle);
+    const jobTitle = extractJobTitle(rawTitle);
+    const location = extractLocation(rawTitle);
+    const linkedinUrl = item.url || 'No LinkedIn URL provided';
+
+    if (!existingLinks.includes(linkedinUrl)) {
+      sheet.appendRow([company, jobTitle, location, linkedinUrl]);
+    }
+  });
+}
+
+// Helper function to extract company name from the raw title
+function extractCompany(rawTitle) {
+  const match = rawTitle.match(/^(.*?) hiring/i);
+  return match ? match[1].trim() : 'No company provided';
+}
+
+// Helper function to extract job title from the raw title
+function extractJobTitle(rawTitle) {
+  const match = rawTitle.match(/hiring (.*?) in/i);
+  return match ? match[1].trim() : 'No job title provided';
+}
+
+// Helper function to extract location from the raw title
+function extractLocation(rawTitle) {
+  const match = rawTitle.match(/in (.*?)(,|$)/i);
+  return match ? match[1].trim() : 'No location provided';
+}
